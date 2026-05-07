@@ -11,8 +11,14 @@
 </script>
 
 <div class="progress-container">
-  <div class="progress-bar" style="width: {percent}%" role="progressbar" aria-valuenow={totalClicks} aria-valuemin={0} aria-valuemax={target}>
-  </div>
+  <div
+    class="progress-bar"
+    style="width: {percent}%"
+    role="progressbar"
+    aria-valuenow={totalClicks}
+    aria-valuemin={0}
+    aria-valuemax={target}
+  ></div>
   <span class="progress-label">{label}</span>
 </div>
 

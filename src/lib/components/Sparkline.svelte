@@ -6,23 +6,27 @@
   const padding = 2;
 
   const points = $derived(() => {
-    if (data.length < 2) return '';
+    if (data.length < 2) return "";
     const max = Math.max(...data, 10);
     const stepX = (width - padding * 2) / (data.length - 1);
     return data
       .map((val, i) => {
         const x = padding + i * stepX;
-        const y = height - padding - ((val / max) * (height - padding * 2));
+        const y = height - padding - (val / max) * (height - padding * 2);
         return `${x},${y}`;
       })
-      .join(' ');
+      .join(" ");
   });
 </script>
 
 {#if data.length >= 2}
   <div class="sparkline-container">
     <span class="sparkline-label">Top-10 stability:</span>
-    <svg viewBox="0 0 {width} {height}" class="sparkline" aria-label="Sparkline showing top-10 ranking stability over time">
+    <svg
+      viewBox="0 0 {width} {height}"
+      class="sparkline"
+      aria-label="Sparkline showing top-10 ranking stability over time"
+    >
       <polyline
         points={points()}
         fill="none"
@@ -33,7 +37,9 @@
       />
     </svg>
     <span class="sparkline-hint">
-      {data[data.length - 1] === 0 ? 'Stable!' : `${data[data.length - 1]} changes`}
+      {data[data.length - 1] === 0
+        ? "Stable!"
+        : `${data[data.length - 1]} changes`}
     </span>
   </div>
 {/if}

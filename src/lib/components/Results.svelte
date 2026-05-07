@@ -1,7 +1,7 @@
 <script>
-  import { VALUES } from '../values.js';
-  import { exportResults } from '../store.js';
-  import Sparkline from './Sparkline.svelte';
+  import { exportResults } from "../store.js";
+  import { VALUES } from "../values.js";
+  import Sparkline from "./Sparkline.svelte";
 
   let { state = {}, churnData = [], onContinue = () => {} } = $props();
 
@@ -13,11 +13,11 @@
 
   function downloadExport() {
     const text = exportResults(state);
-    const blob = new Blob([text], { type: 'text/plain' });
+    const blob = new Blob([text], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = url;
-    a.download = 'my-values-ranking.txt';
+    a.download = "my-values-ranking.txt";
     a.click();
     URL.revokeObjectURL(url);
   }
@@ -30,7 +30,9 @@
   <Sparkline data={churnData} />
 
   <div class="results-actions">
-    <button class="btn-primary" onclick={downloadExport}>Download as .txt</button>
+    <button class="btn-primary" onclick={downloadExport}
+      >Download as .txt</button
+    >
     <button class="btn-secondary" onclick={onContinue}>Keep ranking</button>
   </div>
 

@@ -1,5 +1,5 @@
 <script>
-  import { VALUES } from '../values.js';
+  import { VALUES } from "../values.js";
 
   let { groupIndices = [], onSelect = () => {} } = $props();
   let selected = $state(null);
@@ -14,7 +14,7 @@
   }
 
   function handleKeydown(e, idx) {
-    if (e.key === 'Enter' || e.key === ' ') {
+    if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
       handleSelect(idx);
     }
@@ -76,7 +76,10 @@
     border: 3px solid #0b0c0c;
     cursor: pointer;
     text-align: center;
-    transition: background 0.15s, border-color 0.15s, transform 0.1s;
+    transition:
+      background 0.15s,
+      border-color 0.15s,
+      transform 0.1s;
     -webkit-tap-highlight-color: transparent;
   }
 
