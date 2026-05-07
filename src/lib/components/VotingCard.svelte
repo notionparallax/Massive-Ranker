@@ -3,16 +3,20 @@
 
   let { groupIndices = [], onSelect = () => {} } = $props();
   let selected = $state(null);
+  let roundKey = $state(0);
 
   // Reset selection when the group changes (new round)
   $effect(() => {
     groupIndices;
     selected = null;
+    roundKey++;
   });
 
   function handleSelect(idx) {
     if (selected !== null) return; // prevent double-click
     selected = idx;
+    // Remove focus from the clicked button immediately
+    document.activeElement?.blur();
     setTimeout(() => {
       onSelect(idx);
       selected = null;
@@ -32,17 +36,19 @@
 </div>
 
 <div class="cards-grid">
-  {#each groupIndices as idx}
-    <button
-      class="card"
-      class:card-selected={selected === idx}
-      onclick={() => handleSelect(idx)}
-      onkeydown={(e) => handleKeydown(e, idx)}
-      disabled={selected !== null}
-    >
-      {VALUES[idx]}
-    </button>
-  {/each}
+  {#key roundKey}
+    {#each groupIndices as idx}
+      <button
+        class="card"
+        class:card-selected={selected === idx}
+        onclick={() => handleSelect(idx)}
+        onkeydown={(e) => handleKeydown(e, idx)}
+        disabled={selected !== null}
+      >
+        {VALUES[idx]}
+      </button>
+    {/each}
+  {/key}
 </div>
 
 <style>
