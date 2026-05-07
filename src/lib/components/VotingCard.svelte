@@ -3,14 +3,6 @@
 
   let { groupIndices = [], onSelect = () => {} } = $props();
   let selected = $state(null);
-  let roundKey = $state(0);
-
-  // Reset selection when the group changes (new round)
-  $effect(() => {
-    groupIndices;
-    selected = null;
-    roundKey++;
-  });
 
   function handleSelect(idx) {
     if (selected !== null) return; // prevent double-click
@@ -36,7 +28,7 @@
 </div>
 
 <div class="cards-grid">
-  {#key roundKey}
+  {#key groupIndices}
     {#each groupIndices as idx}
       <button
         class="card"
