@@ -35,5 +35,11 @@ export function selectGroup(ratings) {
     const candidates = byRdAsc.filter(c => !used.has(c.i)).slice(0, 10);
     pick.push(candidates[Math.floor(Math.random() * candidates.length)]);
 
+    // Shuffle final pick so positions are random in the grid
+    for (let k = pick.length - 1; k > 0; k--) {
+        const j = Math.floor(Math.random() * (k + 1));
+        [pick[k], pick[j]] = [pick[j], pick[k]];
+    }
+
     return pick.map(p => p.i);
 }
