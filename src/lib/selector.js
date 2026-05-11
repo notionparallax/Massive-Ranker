@@ -30,11 +30,10 @@ export function selectGroup(ratings) {
         if (c && !used.has(c.i)) { pick.push(c); used.add(c.i); break; }
     }
 
-    // 1 lowest-RD (stable benchmark)
+    // 1 lowest-RD (stable benchmark) — random pick from 10 most confident
     const byRdAsc = [...indices].sort((a, b) => a.rd - b.rd);
-    for (const c of byRdAsc) {
-        if (!used.has(c.i)) { pick.push(c); break; }
-    }
+    const candidates = byRdAsc.filter(c => !used.has(c.i)).slice(0, 10);
+    pick.push(candidates[Math.floor(Math.random() * candidates.length)]);
 
     return pick.map(p => p.i);
 }
