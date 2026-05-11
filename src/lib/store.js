@@ -3,13 +3,15 @@ import { getRatings, initEngine, restoreEngine } from './engine.js';
 import { VALUES } from './values.js';
 
 const STORAGE_KEY = 'massive-ranker-state';
+const MAX_RD = 350;
 
 function createInitialState() {
     return {
         ratings: VALUES.map(() => ({ rating: 1500, rd: 350, vol: 0.06 })),
         seenCounts: new Array(VALUES.length).fill(0),
         totalClicks: 0,
-        top10History: [] // snapshots of top-10 indices every 5 rounds
+        targetRounds: 150,
+        top10History: []
     };
 }
 
@@ -18,28 +20,23 @@ function loadState() {
         const raw = localStorage.getItem(STORAGE_KEY);
         if (raw) {
             const parsed = JSON.parse(raw);
-            // Validate structure
             if (parsed.ratings && parsed.seenCounts && typeof parsed.totalClicks === 'number') {
+                if (!parsed.targetRounds) parsed.targetRounds = 150;
                 return parsed;
             }
         }
-    } catch (e) {
-        // corrupted state, start fresh
-    }
+    } catch (e) {}
     return createInitialState();
 }
 
 function saveState(state) {
     try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    } catch (e) {
-        // localStorage full or unavailable
-    }
+    } catch (e) {}
 }
 
 const initialState = loadState();
 
-// Initialize the Glicko-2 engine with saved or fresh ratings
 if (initialState.totalClicks > 0) {
     restoreEngine(initialState.ratings);
 } else {
@@ -48,24 +45,18 @@ if (initialState.totalClicks > 0) {
 
 export const gameState = writable(initialState);
 
-// Subscribe to persist on every change
 gameState.subscribe(state => {
     saveState(state);
 });
 
 export function recordRound(winnerIndex, groupIndices) {
     gameState.update(state => {
-        // Update seen counts for all in group
         for (const idx of groupIndices) {
             state.seenCounts[idx]++;
         }
-
         state.totalClicks++;
-
-        // Sync ratings from engine
         state.ratings = getRatings();
 
-        // Snapshot top-10 every 5 rounds
         if (state.totalClicks % 5 === 0) {
             const sorted = state.ratings
                 .map((r, i) => ({ i, rating: r.rating }))
@@ -79,10 +70,22 @@ export function recordRound(winnerIndex, groupIndices) {
     });
 }
 
+export function extendSession(extra) {
+    gameState.update(state => {
+        state.targetRounds += extra;
+        return state;
+    });
+}
+
+export function resetState() {
+    initEngine(VALUES.length);
+    const fresh = createInitialState();
+    gameState.set(fresh);
+}
+
 export function getTop10Churn(state) {
     const history = state.top10History;
     if (history.length < 2) return [];
-
     const churns = [];
     for (let i = 1; i < history.length; i++) {
         const prev = new Set(history[i - 1]);
@@ -93,12 +96,19 @@ export function getTop10Churn(state) {
     return churns;
 }
 
+export function getConfidenceStats(state) {
+    if (!state.ratings) return { confidence: 0, unranked: 0 };
+    const avgRd = state.ratings.reduce((sum, r) => sum + r.rd, 0) / state.ratings.length;
+    const confidence = Math.max(0, Math.round((1 - avgRd / MAX_RD) * 100));
+    const unranked = state.ratings.filter(r => r.rd > MAX_RD * 0.85).length;
+    return { confidence, unranked };
+}
+
 export function exportResults(state) {
     const ranked = state.ratings
-        .map((r, i) => ({ name: VALUES[i], rating: Math.round(r.rating) }))
+        .map((r, i) => ({ name: VALUES[i], rating: Math.round(r.rating), rd: Math.round(r.rd) }))
         .sort((a, b) => b.rating - a.rating);
-
     return ranked
-        .map((v, i) => `${i + 1}. ${v.name} — ${v.rating}`)
+        .map((v, i) => (i + 1) + '. ' + v.name + ' \u2014 ' + v.rating + ' (\u00B1' + v.rd + ')')
         .join('\n');
 }

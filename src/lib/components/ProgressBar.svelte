@@ -1,11 +1,10 @@
 <script>
-  let { totalClicks = 0 } = $props();
+  let { totalClicks = 0, target = 150 } = $props();
 
-  const target = 100;
   const percent = $derived(Math.min((totalClicks / target) * 100, 100));
   const label = $derived(
     totalClicks >= target
-      ? `${totalClicks} rounds (100%+)`
+      ? `${totalClicks} rounds (${target} target reached)`
       : `${totalClicks} of ${target} rounds`
   );
 </script>

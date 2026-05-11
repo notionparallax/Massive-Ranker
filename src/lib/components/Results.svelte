@@ -3,11 +3,11 @@
   import { VALUES } from "../values.js";
   import Sparkline from "./Sparkline.svelte";
 
-  let { state = {}, churnData = [], onContinue = () => {} } = $props();
+  let { state = {}, churnData = [], onContinue = () => {}, onExtend = () => {} } = $props();
 
   const ranked = $derived(
     state.ratings
-      .map((r, i) => ({ name: VALUES[i], rating: Math.round(r.rating) }))
+      .map((r, i) => ({ name: VALUES[i], rating: Math.round(r.rating), rd: Math.round(r.rd) }))
       .sort((a, b) => b.rating - a.rating)
   );
 
@@ -34,12 +34,14 @@
       >Download as .txt</button
     >
     <button class="btn-secondary" onclick={onContinue}>Keep ranking</button>
+    <button class="btn-secondary" onclick={onExtend}>+50 more rounds</button>
   </div>
 
   <ol class="results-list">
     {#each ranked as value, i}
       <li class:top-value={i < 5}>
         <span class="value-name">{value.name}</span>
+        <span class="value-rd" title="Rating deviation (uncertainty)">{'\u00B1'}{value.rd}</span>
         <span class="value-score">{value.rating}</span>
       </li>
     {/each}
@@ -143,6 +145,13 @@
 
   .value-name {
     flex: 1;
+  }
+
+  .value-rd {
+    font-size: 0.75rem;
+    color: #b1b4b6;
+    margin-right: 0.75rem;
+    font-variant-numeric: tabular-nums;
   }
 
   .value-score {
