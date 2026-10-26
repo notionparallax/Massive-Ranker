@@ -9,12 +9,12 @@
     "preview": "vite preview"
   },
   "devDependencies": {
-    "@sveltejs/vite-plugin-svelte": "^7.0.0",
-    "svelte": "^5.55.4",
-    "vite": "^8.0.10"
+    "@sveltejs/vite-plugin-svelte": "^7.3.1",
+    "svelte": "^5.57.2",
+    "vite": "^8.3.5"
   },
   "dependencies": {
     "canvas-confetti": "^1.9.4",
-    "glicko2": "^1.2.1"
+    "glicko2": "^1.2.2"
   }
 }
