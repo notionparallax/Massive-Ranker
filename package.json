@@ -10,11 +10,11 @@
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^7.3.1",
-    "svelte": "^5.57.2",
+    "svelte": "^5.57.3",
     "vite": "^8.3.5"
   },
   "dependencies": {
     "canvas-confetti": "^1.9.4",
-    "glicko2": "^1.2.2"
+    "glicko2": "^1.2.4"
   }
 }
